@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice to Text Conversion</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #startRecording {
+            padding: 15px 30px;
+            font-size: 24px;
+            border: none;
+            border-radius: 50px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #startRecording:hover {
+            background-color: #0056b3;
+        }
+
+        #startRecording:active {
+            transform: translateY(2px);
+        }
+
+        #stopRecording {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #transcribedText {
+            margin-top: 30px;
+            font-size: 24px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Voice to Text Conversion</h1>
+    <button id="startRecording">Start Recording</button>
+    <button id="stopRecording">Stop Recording</button>
+    <div id="transcribedText"></div>
+
+    <script>
+        let recognition;
+        const startRecordingButton = document.getElementById("startRecording");
+        const stopRecordingButton = document.getElementById("stopRecording");
+        const transcribedTextDiv = document.getElementById("transcribedText");
+
+        startRecordingButton.addEventListener("click", startRecording);
+        stopRecordingButton.addEventListener("click", stopRecording);
+
+        function startRecording() {
+            recognition = new webkitSpeechRecognition(); // For Chrome-based browsers
+            // recognition = new SpeechRecognition(); // For Firefox-based browsers
+
+            recognition.lang = "en-US"; // Language for speech recognition (change as needed)
+            recognition.interimResults = true; // Get partial results as the user speaks
+
+            recognition.onstart = () => {
+                console.log("Recording started.");
+                startRecordingButton.style.display = "none";
+                stopRecordingButton.style.display = "block";
+            };
+
+            recognition.onresult = (event) => {
+                let transcript = "";
+                for (const result of event.results) {
+                    transcript += result[0].transcript;
+                }
+                transcribedTextDiv.textContent = transcript;
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Error occurred in recognition:", event.error);
+            };
+
+            recognition.onend = () => {
+                console.log("Recording stopped.");
+                startRecordingButton.style.display = "block";
+                stopRecordingButton.style.display = "none";
+            };
+
+            recognition.start();
+        }
+
+        function stopRecording() {
+            if (recognition) {
+                recognition.stop();
+            }
+        }
+    </script>
+</body>
+</html>
